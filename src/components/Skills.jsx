@@ -1,99 +1,151 @@
-import React, { useState } from 'react';
-import './Skills.css';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, Server, Wrench, Layout, Database, Globe, GitBranch, Figma, MonitorSmartphone, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Code2, Server, Wrench, Layout, Database, Globe, GitBranch, Figma, MonitorSmartphone, ChevronDown, ChevronUp, Layers, Terminal, Smartphone } from 'lucide-react';
 
 const skillsData = [
     {
         category: 'FRONTEND',
-        label: 'Frontend Development',
-        description: 'HTML5, CSS3, JavaScript, React – Building responsive and interactive user interfaces',
+        label: 'Client-Side Experience',
+        description: 'Building modern, high-performance web interfaces with focus on interactivity and user experience.',
         icons: [
-            { icon: <Globe size={18} />, title: 'HTML/CSS' },
-            { icon: <Code2 size={18} />, title: 'JavaScript' },
-            { icon: <Layout size={18} />, title: 'React' },
+            { icon: <Layout size={20} />, title: 'React' },
+            { icon: <Globe size={20} />, title: 'Web App' },
+            { icon: <Smartphone size={20} />, title: 'Responsive' },
         ],
-        expanded: ['HTML5', 'CSS3', 'JavaScript', 'React.js', 'Vite', 'TailwindCSS', 'Framer Motion'],
-        color: '#d4621a',
+        expanded: ['React.js', 'Vite', 'Tailwind CSS', 'Framer Motion', 'JavaScript (ES6+)', 'HTML5/CSS3', 'Next.js'],
+        color: '#06b6d4',
     },
     {
         category: 'BACKEND',
-        label: 'Backend Development',
-        description: 'PHP, MySQL, Supabase – Server-side development and database management',
+        label: 'Server & Logic',
+        description: 'Designing robust architectures and scalable databases to power complex web applications.',
         icons: [
-            { icon: <Server size={18} />, title: 'Server' },
-            { icon: <Database size={18} />, title: 'Database' },
-            { icon: <Globe size={18} />, title: 'APIs' },
+            { icon: <Server size={20} />, title: 'Server' },
+            { icon: <Database size={20} />, title: 'Database' },
+            { icon: <Layers size={20} />, title: 'CMS' },
         ],
-        expanded: ['PHP', 'MySQL', 'Supabase', 'Node.js', 'Express', 'RESTful APIs'],
-        color: '#c45a15',
+        expanded: ['Node.js', 'Express', 'PHP', 'MySQL', 'Supabase', 'MongoDB', 'RESTful APIs'],
+        color: '#8b5cf6',
     },
     {
         category: 'TOOLS',
-        label: 'Tools & Platforms',
-        description: 'Git, GitHub, Figma, VS Code – Development tools and version control systems',
+        label: 'Workflow & DevOps',
+        description: 'Utilizing industry-standard tools for version control, design, and streamlined development cycles.',
         icons: [
-            { icon: <GitBranch size={18} />, title: 'Git' },
-            { icon: <Code2 size={18} />, title: 'VS Code' },
-            { icon: <Figma size={18} />, title: 'Figma' },
+            { icon: <GitBranch size={20} />, title: 'Git' },
+            { icon: <Terminal size={20} />, title: 'CLI' },
+            { icon: <Figma size={20} />, title: 'Figma' },
         ],
-        expanded: ['Git', 'GitHub', 'Figma', 'VS Code', 'Postman', 'Docker'],
-        color: '#b85210',
+        expanded: ['Git & GitHub', 'VS Code', 'Postman', 'Vercel', 'Netlify', 'Docker', 'npm / yarn'],
+        color: '#10b981',
     },
 ];
 
 const SkillCard = ({ skill, index }) => {
     const [expanded, setExpanded] = useState(false);
 
+    // 3D Tilt Values
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x);
+    const mouseYSpring = useSpring(y);
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
+
+    const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
+
     return (
         <motion.div
             className="skill-tech-card"
+            style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+                '--accent': skill.color
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.55, delay: index * 0.12 }}
-            whileHover={{ y: -6, scale: 1.02 }}
+            transition={{ duration: 0.6, delay: index * 0.15 }}
         >
             {/* Glossy top blob */}
             <div className="skill-card-blob" />
+            <div className="skill-card-noise" />
 
-            <div className="skill-card-inner">
-                <span className="skill-card-category">{skill.category}</span>
+            <div className="skill-card-inner" style={{ transform: "translateZ(50px)" }}>
+                <div className="skill-card-header">
+                    <span className="skill-card-category">{skill.category}</span>
+                    <h3 className="skill-card-label">{skill.label}</h3>
+                </div>
+
                 <p className="skill-card-desc">{skill.description}</p>
 
                 <AnimatePresence>
                     {expanded && (
-                        <motion.ul
-                            className="skill-expanded-list"
+                        <motion.div
+                            className="skill-expanded-grid"
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                         >
                             {skill.expanded.map((item, i) => (
-                                <li key={i}>
-                                    <span className="skill-dot-sm" />
+                                <motion.span
+                                    key={i}
+                                    className="skill-tag"
+                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ delay: i * 0.05 }}
+                                >
                                     {item}
-                                </li>
+                                </motion.span>
                             ))}
-                        </motion.ul>
+                        </motion.div>
                     )}
                 </AnimatePresence>
 
                 <div className="skill-card-footer">
                     <div className="skill-icon-row">
                         {skill.icons.map((ic, i) => (
-                            <span key={i} className="skill-icon-badge" title={ic.title}>
+                            <motion.span
+                                key={i}
+                                className="skill-icon-badge"
+                                title={ic.title}
+                                whileHover={{ scale: 1.2, rotate: 10 }}
+                            >
                                 {ic.icon}
-                            </span>
+                            </motion.span>
                         ))}
                     </div>
                     <button
-                        className="skill-view-more"
+                        className={`skill-view-more ${expanded ? 'active' : ''}`}
                         onClick={() => setExpanded(!expanded)}
                     >
-                        {expanded ? 'View less' : 'View more'}
-                        {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                        {expanded ? 'Collapse' : 'Explore tech'}
+                        <motion.div
+                            animate={{ rotate: expanded ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <ChevronDown size={14} />
+                        </motion.div>
                     </button>
                 </div>
             </div>
