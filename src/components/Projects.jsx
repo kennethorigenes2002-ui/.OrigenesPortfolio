@@ -10,8 +10,8 @@ const projects = [
         id: 1,
         title: 'AgriChain',
         description: 'Blockchain-Based Farming Assistance System connecting farmers directly with markets, enabling transparent supply chains and fair pricing.',
-        tech: ['React', 'Solidity', 'Node.js', 'MongoDB'],
-        role: 'Full Stack Developer',
+        tech: [],
+        role: '',
         link: '#',
         github: '#',
         image: '/P1.png',
@@ -21,8 +21,8 @@ const projects = [
         id: 2,
         title: 'Zenith',
         description: 'A comprehensive productivity platform designed to help users efficiently manage tasks, set priorities, and monitor progress in real-time.',
-        tech: ['React', 'Tailwind CSS', 'Node.js', 'Express'],
-        role: 'Frontend Developer',
+        tech: [],
+        role: '',
         link: '#',
         github: '#',
         image: '/P2.jpg',
@@ -32,8 +32,8 @@ const projects = [
         id: 3,
         title: 'Online Gadget Loan Approval',
         description: 'An interactive administrative dashboard featuring dynamic charts, sales analytics, and reporting tools to streamline data-driven business decisions.',
-        tech: ['React', 'Chart.js', 'MySQL'],
-        role: 'Frontend Developer',
+        tech: [],
+        role: '',
         link: '#',
         github: '#',
         image: '/P3.jpg',
@@ -225,15 +225,18 @@ const Projects = () => {
                                     </div>
                                 )}
 
-                                <motion.div
-                                    className="proj-img-overlay"
-                                    initial={{ opacity: 0, x: -8 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.14 + 0.3 }}
-                                >
-                                    <span className="proj-overlay-role">{project.role}</span>
-                                </motion.div>
+
+                                {project.role && (
+                                    <motion.div
+                                        className="proj-img-overlay"
+                                        initial={{ opacity: 0, x: -8 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5, delay: index * 0.14 + 0.3 }}
+                                    >
+                                        <span className="proj-overlay-role">{project.role}</span>
+                                    </motion.div>
+                                )}
                             </div>
 
                             {/* Glow border sweep */}
@@ -261,23 +264,26 @@ const Projects = () => {
                                     {project.description}
                                 </motion.p>
 
-                                <motion.div
-                                    className="proj-tech"
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={{ once: true }}
-                                >
-                                    {project.tech.map((t, i) => (
-                                        <motion.span
-                                            key={i}
-                                            className="proj-badge"
-                                            variants={badgeVariant}
-                                            custom={i + index * 2}
-                                        >
-                                            {t}
-                                        </motion.span>
-                                    ))}
-                                </motion.div>
+
+                                {project.tech && project.tech.length > 0 && (
+                                    <motion.div
+                                        className="proj-tech"
+                                        initial="hidden"
+                                        whileInView="visible"
+                                        viewport={{ once: true }}
+                                    >
+                                        {project.tech.map((t, i) => (
+                                            <motion.span
+                                                key={i}
+                                                className="proj-badge"
+                                                variants={badgeVariant}
+                                                custom={i + index * 2}
+                                            >
+                                                {t}
+                                            </motion.span>
+                                        ))}
+                                    </motion.div>
+                                )}
 
                                 <div className="proj-footer">
                                     <div className="proj-icon-row">
@@ -398,9 +404,12 @@ const Projects = () => {
                                         </motion.span>
                                     </div>
 
-                                    <motion.p className="proj-modal-role" variants={modalContentVariant} initial="hidden" animate="visible" custom={2}>
-                                        {selected.role}
-                                    </motion.p>
+
+                                    {selected.role && (
+                                        <motion.p className="proj-modal-role" variants={modalContentVariant} initial="hidden" animate="visible" custom={2}>
+                                            {selected.role}
+                                        </motion.p>
+                                    )}
 
                                     <motion.div className="proj-modal-divider" style={{ background: `linear-gradient(90deg, ${selected.accent}40, transparent)` }} variants={modalContentVariant} initial="hidden" animate="visible" custom={3} />
 
@@ -408,19 +417,22 @@ const Projects = () => {
                                         {selected.description}
                                     </motion.p>
 
-                                    <motion.div className="proj-tech" variants={modalContentVariant} initial="hidden" animate="visible" custom={5}>
-                                        {selected.tech.map((t, i) => (
-                                            <motion.span
-                                                key={i}
-                                                className="proj-badge"
-                                                initial={{ opacity: 0, scale: 0.75, y: 8 }}
-                                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                transition={{ delay: 0.38 + i * 0.07, type: 'spring', stiffness: 380, damping: 22 }}
-                                            >
-                                                {t}
-                                            </motion.span>
-                                        ))}
-                                    </motion.div>
+
+                                    {selected.tech && selected.tech.length > 0 && (
+                                        <motion.div className="proj-tech" variants={modalContentVariant} initial="hidden" animate="visible" custom={5}>
+                                            {selected.tech.map((t, i) => (
+                                                <motion.span
+                                                    key={i}
+                                                    className="proj-badge"
+                                                    initial={{ opacity: 0, scale: 0.75, y: 8 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    transition={{ delay: 0.38 + i * 0.07, type: 'spring', stiffness: 380, damping: 22 }}
+                                                >
+                                                    {t}
+                                                </motion.span>
+                                            ))}
+                                        </motion.div>
+                                    )}
 
                                     <motion.div className="proj-modal-links" variants={modalContentVariant} initial="hidden" animate="visible" custom={6}>
                                         <motion.a
