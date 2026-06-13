@@ -10,7 +10,7 @@ const initialAchievements = [
         category: 'On-The-Job Training',
         color: '#fbbf24',
         details: 'Completed 486 hours of On-The-Job Training at Nehemiah Solutions Corporation under the Software Research and Development Department.',
-        mediaUrl: '/project_agrichain.png',
+        mediaUrl: '/cer1.jpg',
         mediaType: 'image'
     },
     {
@@ -19,7 +19,7 @@ const initialAchievements = [
         category: 'Capstone Project Exhibit',
         color: '#a78bfa',
         details: 'Presented the capstone project entitled "AGRICHAIN: A Blockchain-Based Farming Assistance Distribution and Monitoring System for the Municipality of Kapalong".',
-        mediaUrl: '/project_ai_seed_scanner.png',
+        mediaUrl: '/cer2.jpg',
         mediaType: 'image'
     },
     {
@@ -28,7 +28,7 @@ const initialAchievements = [
         category: 'Course Completion',
         color: '#34d399',
         details: 'Successfully completed the Cybersecurity Essentials course offered by Davao del Norte State College through the Cisco Networking Academy program.',
-        mediaUrl: '/project_edutrack.png',
+        mediaUrl: '/cer3.png',
         mediaType: 'image'
     }
 ];

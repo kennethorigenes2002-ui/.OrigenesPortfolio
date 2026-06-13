@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, ExternalLink, X, ArrowUpRight, Upload, ImagePlus, Film } from 'lucide-react';
 import './Projects.css';
+
 
 const projects = [
     {
@@ -12,7 +14,7 @@ const projects = [
         role: 'Full Stack Developer',
         link: '#',
         github: '#',
-        image: '/project_agrichain.png',
+        image: '/P1.png',
         accent: '#06b6d4',
     },
     {
@@ -23,7 +25,7 @@ const projects = [
         role: 'Frontend Developer',
         link: '#',
         github: '#',
-        image: '/project_ai_seed_scanner.png',
+        image: '/P2.jpg',
         accent: '#8b5cf6',
     },
     {
@@ -34,7 +36,7 @@ const projects = [
         role: 'Frontend Developer',
         link: '#',
         github: '#',
-        image: '/project_edutrack.png',
+        image: '/P3.jpg',
         accent: '#34d399',
     },
 ];
@@ -141,10 +143,8 @@ const Projects = () => {
 
     const getMedia = (project) => {
         const uploaded = mediaMap[project.id];
-        return {
-            src: uploaded?.url ?? project.image,
-            type: uploaded?.type ?? 'image',
-        };
+        if (!uploaded) return { src: project.image ?? null, type: 'image' };
+        return { src: uploaded.url, type: uploaded.type };
     };
 
     return (
@@ -204,39 +204,26 @@ const Projects = () => {
 
                             {/* Image / Video */}
                             <div className="proj-img-wrap">
-                                <MediaDisplay
-                                    src={src}
-                                    type={type}
-                                    alt={project.title}
-                                    className="proj-img"
-                                />
-                                <div className="proj-img-gradient" />
-
-                                <div className="proj-thumbnail-overlay">
-                                    <ArrowUpRight size={28} />
-                                    <span>View</span>
-                                </div>
-
-                                {/* Upload button overlay */}
-                                <motion.button
-                                    className="proj-upload-btn"
-                                    title="Upload photo or video"
-                                    onClick={e => handleUploadClick(e, project.id)}
-                                    whileHover={{ scale: 1.12 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-                                >
-                                    {type === 'video'
-                                        ? <Film size={13} />
-                                        : isUploaded
-                                            ? <ImagePlus size={13} />
-                                            : <Upload size={13} />
-                                    }
-                                    {isUploaded
-                                        ? type === 'video' ? 'Change Video' : 'Change Photo'
-                                        : 'Upload Media'
-                                    }
-                                </motion.button>
+                                {src ? (
+                                    <>
+                                        <MediaDisplay
+                                            src={src}
+                                            type={type}
+                                            alt={project.title}
+                                            className="proj-img"
+                                        />
+                                        <div className="proj-img-gradient" />
+                                        <div className="proj-thumbnail-overlay">
+                                            <ArrowUpRight size={28} />
+                                            <span>View</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="proj-img-placeholder">
+                                        <Upload size={28} style={{ opacity: 0.35, color: `var(--accent, #06b6d4)` }} />
+                                        <span>Open Details to add image</span>
+                                    </div>
+                                )}
 
                                 <motion.div
                                     className="proj-img-overlay"
@@ -332,135 +319,137 @@ const Projects = () => {
                 })}
             </div>
 
-            {/* Modal */}
-            <AnimatePresence mode="wait">
-                {selected && (
-                    <motion.div
-                        key="proj-modal-overlay"
-                        className="proj-modal-bg"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.22 }}
-                        onClick={() => setSelected(null)}
-                    >
+            {/* Modal — rendered via portal to escape isolation stacking context */}
+            {ReactDOM.createPortal(
+                <AnimatePresence mode="wait">
+                    {selected && (
                         <motion.div
-                            className="proj-modal"
-                            initial={{ opacity: 0, scale: 0.86, y: 48 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.93, y: 24 }}
-                            transition={{ type: 'spring', damping: 24, stiffness: 300, mass: 0.8 }}
-                            style={{ '--accent': selected.accent }}
-                            onClick={e => e.stopPropagation()}
+                            key="proj-modal-overlay"
+                            className="proj-modal-bg"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.22 }}
+                            onClick={() => setSelected(null)}
                         >
-                            <motion.button
-                                className="proj-modal-close"
-                                onClick={() => setSelected(null)}
-                                initial={{ opacity: 0, rotate: -45, scale: 0.7 }}
-                                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                                transition={{ delay: 0.2, type: 'spring', stiffness: 360, damping: 20 }}
-                                whileHover={{ rotate: 90, scale: 1.1 }}
-                                whileTap={{ scale: 0.88 }}
-                            >
-                                <X size={20} />
-                            </motion.button>
-
-                            {/* Modal media */}
                             <motion.div
-                                className="proj-modal-img-wrap"
-                                initial={{ opacity: 0, scale: 1.04 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                                className="proj-modal"
+                                initial={{ opacity: 0, scale: 0.86, y: 48 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.93, y: 24 }}
+                                transition={{ type: 'spring', damping: 24, stiffness: 300, mass: 0.8 }}
+                                style={{ '--accent': selected.accent }}
+                                onClick={e => e.stopPropagation()}
                             >
-                                <MediaDisplay
-                                    src={getMedia(selected).src}
-                                    type={getMedia(selected).type}
-                                    alt={selected.title}
-                                    className="proj-modal-img"
-                                />
-                                <div className="proj-modal-img-grad" />
-
-                                <input
-                                    type="file"
-                                    accept="image/*,video/*"
-                                    className="proj-file-input"
-                                    onChange={e => handleFileChange(e, selected.id)}
-                                />
                                 <motion.button
-                                    className="proj-modal-upload-btn"
-                                    title="Upload photo or video"
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        e.currentTarget.previousElementSibling?.click();
-                                    }}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
+                                    className="proj-modal-close"
+                                    onClick={() => setSelected(null)}
+                                    initial={{ opacity: 0, rotate: -45, scale: 0.7 }}
+                                    animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                                    transition={{ delay: 0.2, type: 'spring', stiffness: 360, damping: 20 }}
+                                    whileHover={{ rotate: 90, scale: 1.1 }}
+                                    whileTap={{ scale: 0.88 }}
                                 >
-                                    <Upload size={14} /> Replace Image
+                                    <X size={20} />
                                 </motion.button>
-                            </motion.div>
 
-                            <div className="proj-modal-info">
-                                <div className="proj-modal-header-row">
-                                    <motion.h3 className="proj-modal-title" style={{ color: selected.accent }} variants={modalContentVariant} initial="hidden" animate="visible" custom={0}>
-                                        {selected.title}
-                                    </motion.h3>
-                                    <motion.span className="proj-modal-year" style={{ backgroundColor: `${selected.accent}20`, color: selected.accent }} variants={modalContentVariant} initial="hidden" animate="visible" custom={1}>
-                                        2025
-                                    </motion.span>
-                                </div>
+                                {/* Modal media */}
+                                <motion.div
+                                    className="proj-modal-img-wrap"
+                                    initial={{ opacity: 0, scale: 1.04 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                                >
+                                    <MediaDisplay
+                                        src={getMedia(selected).src}
+                                        type={getMedia(selected).type}
+                                        alt={selected.title}
+                                        className="proj-modal-img"
+                                    />
+                                    <div className="proj-modal-img-grad" />
 
-                                <motion.p className="proj-modal-role" variants={modalContentVariant} initial="hidden" animate="visible" custom={2}>
-                                    {selected.role}
-                                </motion.p>
+                                    <input
+                                        type="file"
+                                        accept="image/*,video/*"
+                                        className="proj-file-input"
+                                        onChange={e => handleFileChange(e, selected.id)}
+                                    />
+                                    <motion.button
+                                        className="proj-modal-upload-btn"
+                                        title="Upload photo or video"
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.currentTarget.previousElementSibling?.click();
+                                        }}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        <Upload size={14} /> Replace Image
+                                    </motion.button>
+                                </motion.div>
 
-                                <motion.div className="proj-modal-divider" style={{ background: `linear-gradient(90deg, ${selected.accent}40, transparent)` }} variants={modalContentVariant} initial="hidden" animate="visible" custom={3} />
-
-                                <motion.p className="proj-modal-desc" variants={modalContentVariant} initial="hidden" animate="visible" custom={4}>
-                                    {selected.description}
-                                </motion.p>
-
-                                <motion.div className="proj-tech" variants={modalContentVariant} initial="hidden" animate="visible" custom={5}>
-                                    {selected.tech.map((t, i) => (
-                                        <motion.span
-                                            key={i}
-                                            className="proj-badge"
-                                            initial={{ opacity: 0, scale: 0.75, y: 8 }}
-                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                            transition={{ delay: 0.38 + i * 0.07, type: 'spring', stiffness: 380, damping: 22 }}
-                                        >
-                                            {t}
+                                <div className="proj-modal-info">
+                                    <div className="proj-modal-header-row">
+                                        <motion.h3 className="proj-modal-title" style={{ color: selected.accent }} variants={modalContentVariant} initial="hidden" animate="visible" custom={0}>
+                                            {selected.title}
+                                        </motion.h3>
+                                        <motion.span className="proj-modal-year" style={{ backgroundColor: `${selected.accent}20`, color: selected.accent }} variants={modalContentVariant} initial="hidden" animate="visible" custom={1}>
+                                            2025
                                         </motion.span>
-                                    ))}
-                                </motion.div>
+                                    </div>
 
-                                <motion.div className="proj-modal-links" variants={modalContentVariant} initial="hidden" animate="visible" custom={6}>
-                                    <motion.a
-                                        href={selected.github}
-                                        className="proj-modal-btn"
-                                        onClick={e => e.stopPropagation()}
-                                        whileHover={{ scale: 1.04, y: -2 }}
-                                        whileTap={{ scale: 0.96 }}
-                                        transition={{ type: 'spring', stiffness: 380, damping: 18 }}
-                                    >
-                                        <Github size={15} /> GitHub
-                                    </motion.a>
-                                    <motion.a
-                                        href={selected.link}
-                                        className="proj-modal-btn accent"
-                                        onClick={e => e.stopPropagation()}
-                                        whileHover={{ scale: 1.04, y: -2 }}
-                                        whileTap={{ scale: 0.96 }}
-                                        transition={{ type: 'spring', stiffness: 380, damping: 18 }}
-                                    >
-                                        <ExternalLink size={15} /> Live Demo
-                                    </motion.a>
-                                </motion.div>
-                            </div>
+                                    <motion.p className="proj-modal-role" variants={modalContentVariant} initial="hidden" animate="visible" custom={2}>
+                                        {selected.role}
+                                    </motion.p>
+
+                                    <motion.div className="proj-modal-divider" style={{ background: `linear-gradient(90deg, ${selected.accent}40, transparent)` }} variants={modalContentVariant} initial="hidden" animate="visible" custom={3} />
+
+                                    <motion.p className="proj-modal-desc" variants={modalContentVariant} initial="hidden" animate="visible" custom={4}>
+                                        {selected.description}
+                                    </motion.p>
+
+                                    <motion.div className="proj-tech" variants={modalContentVariant} initial="hidden" animate="visible" custom={5}>
+                                        {selected.tech.map((t, i) => (
+                                            <motion.span
+                                                key={i}
+                                                className="proj-badge"
+                                                initial={{ opacity: 0, scale: 0.75, y: 8 }}
+                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                transition={{ delay: 0.38 + i * 0.07, type: 'spring', stiffness: 380, damping: 22 }}
+                                            >
+                                                {t}
+                                            </motion.span>
+                                        ))}
+                                    </motion.div>
+
+                                    <motion.div className="proj-modal-links" variants={modalContentVariant} initial="hidden" animate="visible" custom={6}>
+                                        <motion.a
+                                            href={selected.github}
+                                            className="proj-modal-btn"
+                                            onClick={e => e.stopPropagation()}
+                                            whileHover={{ scale: 1.04, y: -2 }}
+                                            whileTap={{ scale: 0.96 }}
+                                            transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+                                        >
+                                            <Github size={15} /> GitHub
+                                        </motion.a>
+                                        <motion.a
+                                            href={selected.link}
+                                            className="proj-modal-btn accent"
+                                            onClick={e => e.stopPropagation()}
+                                            whileHover={{ scale: 1.04, y: -2 }}
+                                            whileTap={{ scale: 0.96 }}
+                                            transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+                                        >
+                                            <ExternalLink size={15} /> Live Demo
+                                        </motion.a>
+                                    </motion.div>
+                                </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </AnimatePresence>
+                , document.body)}
         </section>
     );
 };

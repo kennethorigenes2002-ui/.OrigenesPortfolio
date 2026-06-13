@@ -657,6 +657,26 @@
     border-color: var(--accent, #06b6d4);
 }
 
+/* ─── No-image Placeholder ──────────────────────────────────── */
+.proj-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(10, 14, 26, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.proj-img-placeholder span {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(180, 190, 220, 0.35);
+    letter-spacing: 0.04em;
+}
+
 /* ─── Upload Elements ────────────────────────────────────────── */
 .proj-file-input {
     display: none;
