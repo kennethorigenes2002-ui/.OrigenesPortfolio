@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+import './Skills.css';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Code2, Server, Wrench, Layout, Database, Globe, GitBranch, Figma, MonitorSmartphone, ChevronDown, ChevronUp, Layers, Terminal, Smartphone } from 'lucide-react';
 
